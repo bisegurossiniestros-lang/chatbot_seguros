@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import requests
+import os
 
 app = Flask(__name__)
 
@@ -26,7 +27,7 @@ def enviar_mensaje(to, texto):
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json()
-    print("📩 Llego mensaje:", data)  # Para ver qué llega
+    print("📩 Llego mensaje:", data)  # Para depuración
 
     if "messages" in data["entry"][0]["changes"][0]["value"]:
         mensaje = data["entry"][0]["changes"][0]["value"]["messages"][0]
@@ -48,14 +49,14 @@ def webhook():
 # Para que WhatsApp valide el webhook
 @app.route("/webhook", methods=["GET"])
 def verificar():
-    verify_token = "seguro_token"  # inventa uno
+    verify_token = "seguro_token"  # Cambia por tu token real
     if request.args.get("hub.verify_token") == verify_token:
         return request.args.get("hub.challenge")
     return "Error de verificación", 403
 
-import os
-
+# Inicia la app (solo si se ejecuta local)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port)
+
 
