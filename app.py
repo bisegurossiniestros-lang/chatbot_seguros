@@ -41,17 +41,31 @@ def webhook():
         print("📥 JSON recibido:", json.dumps(data, indent=2))
 
         try:
-            mensajes = data["entry"][0]["changes"][0]["value"].get("messages")
+            # Producción: estructura real de mensajes desde WhatsApp
+            mensajes = (
+                data.get("entry", [{}])[0]
+                .get("changes", [{}])[0]
+                .get("value", {})
+                .get("messages")
+            )
+
+            # Test: estructura simplificada desde el botón "Test" de Meta
+            if not mensajes:
+                mensajes = data.get("value", {}).get("messages")
+
             if mensajes:
                 texto = mensajes[0]["text"]["body"]
                 de = mensajes[0]["from"]
                 print(f"📲 Mensaje de {de}: {texto}")
 
-                # Lógica de respuesta
+                # Respuesta condicional
                 if "seguro" in texto.lower():
                     enviar_mensaje(de, "¡Claro! Te cuento sobre nuestros seguros 🚗🏠👨‍👩‍👧‍👦")
                 else:
                     enviar_mensaje(de, "Gracias por escribirnos 🙌, ¿quieres información sobre seguros?")
+            else:
+                print("⚠️ No se encontraron mensajes en la estructura recibida.")
+
         except Exception as e:
             print("⚠️ Error procesando el mensaje:", e)
 
@@ -60,5 +74,6 @@ def webhook():
 # Ejecutar el servidor
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
 
 
