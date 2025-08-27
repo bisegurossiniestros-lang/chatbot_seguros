@@ -4,9 +4,9 @@ import os
 
 app = Flask(__name__)
 
-# Token y número que te da Meta
-TOKEN = "PON_AQUI_TU_TOKEN"
-PHONE_NUMBER_ID = "PON_AQUI_EL_ID_DEL_NUMERO"
+# 👇 Usa tu token largo de Meta y el ID del número de WhatsApp
+TOKEN = "EAAVgZChpSqzABPS5VCi710BYu9mzoBX3XsaxElxfsdK3zXykBcCoDG3GaCbDRczZBA1KvFeviEzhONnec6gjkrs4GvaueiTZAKiJeXiEsCZCHbhqd5HMsBSbs35vU3K2SiwjuZCVw4m7W77ceYd0pBEefmT6DDiDTiZCxjbuBsyjaBqh6AdRsxuhwGG6ZA8LCXijJCQYmH1odGOB2JdBdrWBcMyRX40Qt6uYG54IXZAmFVpeNgZDZD"
+PHONE_NUMBER_ID = "704695322736553"
 
 # Función para enviar mensajes
 def enviar_mensaje(to, texto):
@@ -18,45 +18,18 @@ def enviar_mensaje(to, texto):
     data = {
         "messaging_product": "whatsapp",
         "to": to,
-        "type": "text",
         "text": {"body": texto}
     }
-    requests.post(url, headers=headers, json=data)
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
 
-# Webhook para recibir mensajes
-@app.route("/webhook", methods=["POST"])
-def webhook():
-    data = request.get_json()
-    print("📩 Llego mensaje:", data)  # Para depuración
-
-    if "messages" in data["entry"][0]["changes"][0]["value"]:
-        mensaje = data["entry"][0]["changes"][0]["value"]["messages"][0]
-        numero = mensaje["from"]
-        texto = mensaje["text"]["body"].lower()
-
-        # Respuestas según palabra clave
-        if "auto" in texto:
-            enviar_mensaje(numero, "🚗 Tenemos seguros de auto con cobertura total. ¿Quieres cotizar?")
-        elif "vida" in texto:
-            enviar_mensaje(numero, "❤️ Seguros de vida personalizados. ¿Quieres más información?")
-        elif "salud" in texto:
-            enviar_mensaje(numero, "🏥 Seguros de salud disponibles. ¿Quieres detalles?")
-        else:
-            enviar_mensaje(numero, "👋 Hola, ¿qué tipo de seguro buscas? (auto, vida, salud)")
-
-    return jsonify({"status": "ok"})
-
-# Para que WhatsApp valide el webhook
-@app.route("/webhook", methods=["GET"])
+@app.route("/", methods=["GET"])
 def verificar():
-    verify_token = "seguro_token"  # Cambia por tu token real
-    if request.args.get("hub.verify_token") == verify_token:
-        return request.args.get("hub.challenge")
-    return "Error de verificación", 403
+    return "Bot de seguros activo ✅"
 
-# Inicia la app (solo si se ejecuta local)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=True)
+
 
 
