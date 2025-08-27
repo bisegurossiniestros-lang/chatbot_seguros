@@ -1,55 +1,74 @@
-from flask import Flask, request
-import requests
-import os
+from flask import Flask, request, jsonify
+import requests, os, json
 
 app = Flask(__name__)
 
-VERIFY_TOKEN = "seguro_token"  # el mismo que pusiste en Meta
-TOKEN = "EAAVgZChpSqzABPSfwBP52KoGjmZBLVby371oQtks8rIK3zfZCqo3V1dDZAg1qzrFtE7deOPgvSsckXtafUA79zBZCemVvrjDnZAzVp4G2L9SoOoKzo9pirWvrsBNpgXx9lGnKqbsMM1HDd0ZCZCxUj7bfHMZBoNNrGm0IyCmtoVWiV60ZAPBzcHZC5lZAYPpsluPfaXu1WonT84Kz0ZC48AHhPvDBrZCRqFYUUzk10QzUnqhmROgbGrAZDZD"  # tu token de acceso largo
-PHONE_NUMBER_ID = "806974345822226"  # tu ID de número
+VERIFY_TOKEN = "seguro_token"                 # Debe coincidir con el que pusiste en Meta
+TOKEN = "EAAVgZChpSqzABPSfwBP52KoGjmZBLVby371oQtks8rIK3zfZCqo3V1dDZAg1qzrFtE7deOPgvSsckXtafUA79zBZCemVvrjDnZAzVp4G2L9SoOoKzo9pirWvrsBNpgXx9lGnKqbsMM1HDd0ZCZCxUj7bfHMZBoNNrGm0IyCmtoVWiV60ZAPBzcHZC5lZAYPpsluPfaXu1WonT84Kz0ZC48AHhPvDBrZCRqFYUUzk10QzUnqhmROgbGrAZDZD"                      # Tu token largo (EA...)
+PHONE_NUMBER_ID = "806974345822226"           # Tu Phone Number ID
 
-# Webhook
+@app.route("/", methods=["GET"])
+def ok():
+    return "Bot de seguros activo ✅", 200
+
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     if request.method == "GET":
-        if request.args.get("hub.verify_token") == VERIFY_TOKEN:
-            return request.args.get("hub.challenge")
+        mode = request.args.get("hub.mode")
+        token = request.args.get("hub.verify_token")
+        challenge = request.args.get("hub.challenge")
+        if mode == "subscribe" and token == VERIFY_TOKEN:
+            return challenge, 200
         return "Token inválido", 403
 
-    elif request.method == "POST":
-        data = request.get_json()
-        print(data)  # 👀 Ver en logs lo que llega de WhatsApp
+    # POST: mensaje entrante
+    data = request.get_json(silent=True)
+    print("📥 Evento recibido:\n", json.dumps(data, ensure_ascii=False, indent=2))
 
-        # Verificamos si alguien mandó un mensaje
-        if data and "messages" in data["entry"][0]["changes"][0]["value"]:
-            mensaje = data["entry"][0]["changes"][0]["value"]["messages"][0]
-            numero = mensaje["from"]   # Quien envió
-            texto = mensaje["text"]["body"]  # Lo que escribió
+    try:
+        value = data["entry"][0]["changes"][0]["value"]
+        # Solo procesamos si hay mensajes (ignora 'statuses' u otros eventos)
+        if "messages" in value:
+            msg = value["messages"][0]
+            from_num = msg["from"]  # ej: "51987654321"
+            if msg.get("type") == "text":
+                text = msg["text"]["body"].strip().lower()
+            else:
+                text = ""
 
-            enviar_mensaje(numero, f"Recibí tu mensaje: {texto}")
+            # Reglas simples de respuesta
+            if "auto" in text:
+                reply = "🚗 Seguro de auto con cobertura total. ¿Quieres cotizar?"
+            elif "vida" in text:
+                reply = "❤️ Seguro de vida personalizado. ¿Te cuento opciones?"
+            elif "salud" in text:
+                reply = "🏥 Seguro de salud disponible. ¿Qué plan te interesa?"
+            elif text:
+                reply = f"👋 Recibí: “{text}”. Escribe: auto, vida o salud."
+            else:
+                reply = "👋 Hola, ¿qué tipo de seguro buscas? (auto, vida, salud)"
 
-        return "ok", 200
+            enviar_mensaje(from_num, reply)
+    except Exception as e:
+        print("⚠️ Error procesando:", e)
 
+    return jsonify({"status": "ok"}), 200
 
-# Función para enviar mensajes
-def enviar_mensaje(to, texto):
+def enviar_mensaje(to, body):
     url = f"https://graph.facebook.com/v17.0/{PHONE_NUMBER_ID}/messages"
-    headers = {"Authorization": f"Bearer {TOKEN}"}
-    data = {
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = {
         "messaging_product": "whatsapp",
         "to": to,
         "type": "text",
-        "text": {"body": texto}
+        "text": {"body": body}
     }
-    requests.post(url, headers=headers, json=data)
-
+    r = requests.post(url, headers=headers, json=payload)
+    print("📤 Respuesta de Meta:", r.status_code, r.text)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
-
-
-
-
-
-
-
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
