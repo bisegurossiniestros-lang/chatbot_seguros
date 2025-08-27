@@ -5,8 +5,8 @@ import os
 app = Flask(__name__)
 
 # 👇 Usa tu token largo de Meta y el ID del número de WhatsApp
-TOKEN = "EAAVgZChpSqzABPS5VCi710BYu9mzoBX3XsaxElxfsdK3zXykBcCoDG3GaCbDRczZBA1KvFeviEzhONnec6gjkrs4GvaueiTZAKiJeXiEsCZCHbhqd5HMsBSbs35vU3K2SiwjuZCVw4m7W77ceYd0pBEefmT6DDiDTiZCxjbuBsyjaBqh6AdRsxuhwGG6ZA8LCXijJCQYmH1odGOB2JdBdrWBcMyRX40Qt6uYG54IXZAmFVpeNgZDZD"
-PHONE_NUMBER_ID = "704695322736553"
+TOKEN = "EAAVgZChpSqzABPVZBcy4ZBKDm8ZCY4Vb0wMjDeK0M15ZB16mDgRH363DkDYgCSQZBZBpb7hlCH0QI0XUunRjfmf2j1PhflZArMr9Nl9EIWq3QQkljzTM5Xg1yYaQoEHBWPIZCyL5Tsor0g6RZB42d5mZA8WIOYDmi7ZAAZAEx9LxcmUZAnupkeZBLc38wKc4ZAlO0sYuAqs2W7yCHaTEZCfWQncL1ZAeAZCJCm1y6vEJYYTHoSTfZClotbnuAZAkZD"
+PHONE_NUMBER_ID = "806974345822226"
 
 # Función para enviar mensajes
 def enviar_mensaje(to, texto):
@@ -30,6 +30,7 @@ def verificar():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+
 
 
 
