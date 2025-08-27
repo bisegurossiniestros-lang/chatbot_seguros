@@ -24,23 +24,21 @@ def enviar_mensaje(to, texto):
     print("📤 Enviando:", data)
     print("📥 Respuesta de Meta:", response.status_code, response.text)
 
-# Webhook
+# Ruta del Webhook
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     if request.method == "GET":
         token_enviado = request.args.get("hub.verify_token")
         challenge = request.args.get("hub.challenge")
-
         if token_enviado == VERIFY_TOKEN:
             return challenge, 200
-        else:
-            return "Error de verificación", 403
+        return "Error de verificación", 403
 
     if request.method == "POST":
         try:
             data = request.get_json()
             print("📥 JSON recibido:")
-            print(json.dumps(data, indent=2))
+            print(json.dumps(data, indent=2))  # 👈 Visualización completa en logs
 
             # Producción: mensajes reales
             mensajes = (
@@ -50,16 +48,18 @@ def webhook():
                 .get("messages")
             )
 
-            # Prueba desde botón "Test"
+            # Pruebas: mensaje tipo test (sin entry[])
             if not mensajes:
                 mensajes = data.get("value", {}).get("messages")
 
             if mensajes:
-                texto = mensajes[0]["text"]["body"]
-                de = mensajes[0]["from"]
+                mensaje = mensajes[0]
+                texto = mensaje.get("text", {}).get("body")
+                de = mensaje.get("from")
                 print(f"📲 Mensaje de {de}: {texto}")
 
-                if "seguro" in texto.lower():
+                # Respuesta automática
+                if texto and "seguro" in texto.lower():
                     enviar_mensaje(de, "¡Claro! Te cuento sobre nuestros seguros 🚗🏠👨‍👩‍👧‍👦")
                 else:
                     enviar_mensaje(de, "Gracias por escribirnos 🙌, ¿quieres información sobre seguros?")
@@ -71,9 +71,7 @@ def webhook():
 
         return "EVENT_RECEIVED", 200
 
-# Ejecutar servidor
+# Ejecutar servidor Flask
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
-
-
 
