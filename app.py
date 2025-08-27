@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 VERIFY_TOKEN = "seguro_token"  # el mismo que pusiste en Meta
 TOKEN = "EAAVgZChpSqzABPSfwBP52KoGjmZBLVby371oQtks8rIK3zfZCqo3V1dDZAg1qzrFtE7deOPgvSsckXtafUA79zBZCemVvrjDnZAzVp4G2L9SoOoKzo9pirWvrsBNpgXx9lGnKqbsMM1HDd0ZCZCxUj7bfHMZBoNNrGm0IyCmtoVWiV60ZAPBzcHZC5lZAYPpsluPfaXu1WonT84Kz0ZC48AHhPvDBrZCRqFYUUzk10QzUnqhmROgbGrAZDZD"  # tu token de acceso largo
-PHONE_NUMBER_ID = "704695322736553"  # tu ID de número
+PHONE_NUMBER_ID = "806974345822226"  # tu ID de número
 
 # Webhook
 @app.route("/webhook", methods=["GET", "POST"])
@@ -46,6 +46,7 @@ def enviar_mensaje(to, texto):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+
 
 
 
