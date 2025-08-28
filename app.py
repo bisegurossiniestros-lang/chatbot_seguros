@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Configuración
 VERIFY_TOKEN = "seguro_token"  # Asegúrate de usar este mismo token en el panel de Meta
-TOKEN = "EAAVgZChpSqzABPWtVPUAG6FPkYAEuiMgCbTpOD8BNqE8O81ao8WUvQ01HqqYqbhv1ZBVwreZBE24l5JP77bXshiMZAUMCSw1pgGrE1pQN08ZAmqQl8oYRh6TUf8ssyWtYtcU4EEQtHSPSd4W2tWwDTyML9uqWdbdZCbEqW90UZBt1TsLPxognKBM6GcNfWLrpXLtTqvOIwt2YtkHVG5XJNJBhjp26FOM4TEgEFlSIf3zyVzXQZDZD"     # Tu token largo válido
+TOKEN = "EAAVgZChpSqzABPW3PSukKbtxZAsdHXHUy6zZAHMO2qz0PMnnRuw9qYbBaqbZALMWaL0uW8A49SOfgR7ZBxni1h64FeT9DfwBZAqU1VDSw40zxffeahTZClTZADIa4a7ELP1FIyXlYuZBAnbOBYFsvBWAfPVXGGintZB5UgN4T3wVfP2qA4QQGnyoGWcTdCGNw0OtSuMt7SVc04jTn75ZBu0qpcG4iXe2WICpj3QW9NhtyJh9X2qUz98n1r9fQrXcrwjDNYZD"     # Tu token largo válido
 PHONE_NUMBER_ID = "806974345822226"
 
 # Función para enviar mensaje de WhatsApp
@@ -79,5 +79,6 @@ def webhook():
 if __name__ == "__main__":
     PORT = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=PORT)
+
 
 
