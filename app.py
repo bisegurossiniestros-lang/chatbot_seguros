@@ -11,7 +11,7 @@ VERIFY_TOKEN = "seguro_token"
 TOKEN = "EAAVgZChpSqzABPctpIXtPLEZCCXNXhvGZCn7nopVDnLKVmlTCKWbxNKcwyDr1VI4xUnVxeJDwCxfn93Y2EzChUZBZAPLi9tiMDdxhBkQ8b5QVG7cosOXi2gnOMjaSgVZBkAo2N2DLmfmRBLuOo5LWvVxam8pabHEZAuagn2v48XeefTSFeD4ne9fVdYJmR9egxl6HTpxWMreRobiXbnMFQtrFbmEZBhnhdbpBCykFEnmRpYpnKZBPx2T6ExeDHmZBMiwZDZD"
 PHONE_NUMBER_ID = "806974345822226"
 
-# Enviar mensaje tipo plantilla
+# Función para enviar plantilla
 def enviar_plantilla(to):
     url = f"https://graph.facebook.com/v17.0/{PHONE_NUMBER_ID}/messages"
     headers = {
@@ -23,14 +23,30 @@ def enviar_plantilla(to):
         "to": to,
         "type": "template",
         "template": {
-            "name": "saludo_wasi_app",  # 👈 tu plantilla
+            "name": "wasi_app_v2",  # 👈 Nombre exacto de la plantilla
             "language": {
-                "code": "es"  # idioma: ajusta si tu plantilla usa otro código
+                "code": "es_PE"       # 👈 Código de idioma para Spanish (Perú)
             }
         }
     }
     response = requests.post(url, headers=headers, json=data)
     logging.info("📤 Enviando plantilla a: %s", to)
+    logging.info("📥 Respuesta Meta: %s %s", response.status_code, response.text)
+
+# Función para enviar texto
+def enviar_mensaje(to, texto):
+    url = f"https://graph.facebook.com/v17.0/{PHONE_NUMBER_ID}/messages"
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "messaging_product": "whatsapp",
+        "to": to,
+        "text": {"body": texto}
+    }
+    response = requests.post(url, headers=headers, json=data)
+    logging.info("📤 Enviando mensaje a: %s", to)
     logging.info("📥 Respuesta Meta: %s %s", response.status_code, response.text)
 
 # Webhook
@@ -71,7 +87,7 @@ def webhook():
                 logging.info(f"📲 Mensaje de {de}: {texto}")
 
                 if texto and "seguro" in texto.lower():
-                    enviar_plantilla(de)  # 👉 Aquí se usa la plantilla
+                    enviar_plantilla(de)
                 else:
                     enviar_mensaje(de, "Gracias por escribirnos 🙌, ¿quieres información sobre seguros?")
             else:
@@ -81,25 +97,7 @@ def webhook():
 
         return "EVENT_RECEIVED", 200
 
-# Enviar mensaje de texto (por defecto si no dice "seguro")
-def enviar_mensaje(to, texto):
-    url = f"https://graph.facebook.com/v17.0/{PHONE_NUMBER_ID}/messages"
-    headers = {
-        "Authorization": f"Bearer {TOKEN}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "messaging_product": "whatsapp",
-        "to": to,
-        "text": {"body": texto}
-    }
-    response = requests.post(url, headers=headers, json=data)
-    logging.info("📤 Enviando mensaje a: %s", to)
-    logging.info("📥 Respuesta Meta: %s %s", response.status_code, response.text)
-
 # Ejecutar servidor Flask
 if __name__ == "__main__":
     PORT = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=PORT)
-
-
