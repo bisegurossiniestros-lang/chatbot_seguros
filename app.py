@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Configuración
 VERIFY_TOKEN = "seguro_token"
-TOKEN = "EAAVgZChpSqzABPRWEbjkNZBy66LfEZAfXwvkV5i4oPUvN7T2Q8USoVZAUVt9rHYVqu6gEqr5MwSJwt4EHKip3ZARSuGZBiNZBKStlr6wEbWz2IZAb412JEnE7fKf8kc9AbZA6GKdLianGD65TyZBAmGnoC2RaC9fl0fWECbiRPwd24ORhwwKuppQO6e4UAGNM5EpfnkWlpdY7Ycm3KvXrwLle67ed18eAwUkGfx2OsNcsAFXdVZCdKU4I4x3aZCsdN1QjAZDZD"
+TOKEN = "EAAVgZChpSqzABPctpIXtPLEZCCXNXhvGZCn7nopVDnLKVmlTCKWbxNKcwyDr1VI4xUnVxeJDwCxfn93Y2EzChUZBZAPLi9tiMDdxhBkQ8b5QVG7cosOXi2gnOMjaSgVZBkAo2N2DLmfmRBLuOo5LWvVxam8pabHEZAuagn2v48XeefTSFeD4ne9fVdYJmR9egxl6HTpxWMreRobiXbnMFQtrFbmEZBhnhdbpBCykFEnmRpYpnKZBPx2T6ExeDHmZBMiwZDZD"
 PHONE_NUMBER_ID = "806974345822226"
 
 # Enviar mensaje tipo plantilla
@@ -101,4 +101,5 @@ def enviar_mensaje(to, texto):
 if __name__ == "__main__":
     PORT = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=PORT)
+
 
